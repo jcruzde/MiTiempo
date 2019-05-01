@@ -1,0 +1,20 @@
+#titulo {
+    text-align: center;
+    color: darkblue;
+}
+
+#parrafo {
+    color: blue
+}
+
+#banner {
+    text-align: center;
+}
+
+#pie {
+    position: absolute;
+    bottom: 40px;
+    width: 100%;
+    text-align: center;
+    background-color: skyblue;
+}
