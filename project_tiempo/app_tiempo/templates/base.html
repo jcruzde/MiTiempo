@@ -1,0 +1,27 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en" >
+  <head>
+    <meta charset="utf-8" />
+    <title>MI TIEMPO</title>
+    <link rel="stylesheet" href="{% static "tiempo/main.css" %}">
+  </head>
+
+  <body>
+    <div id = "titulo">
+      <h1>MI TIEMPO</h1>
+    </div>
+
+    <div id = "parrafo">
+      Hola que tal
+    </div>
+
+    {% block content %}{{ content }}{% endblock %}
+
+    <div id="pie">
+      Este es el pie de pagina
+    </div>
+
+  </body>
+</html>

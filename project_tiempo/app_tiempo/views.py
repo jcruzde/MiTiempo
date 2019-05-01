@@ -6,7 +6,7 @@ import json
 
 # Create your views here.
 def main(request):
-    return HttpResponse('Pagina de inicio')
+    return(render(request, './main.html'))
 
 def usuario(request, usuario):
     return HttpResponse('Pagina de un usuario')
