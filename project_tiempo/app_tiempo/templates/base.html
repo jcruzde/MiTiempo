@@ -24,6 +24,20 @@
       Hola que tal
     </div>
 
+    {% if request.user.is_authenticated %}
+    Hola {{ user.username }} !!
+      <form action="" method="POST">
+      {% csrf_token %}
+        <input type="submit" value="Logout">
+     {% else %}
+        <form action="" method="POST">
+        {% csrf_token %}
+        {{ form_in }}
+         <input type="submit" value="Login">
+         </form>
+    {% endif %}
+
+
     {% block content %}{{ content }}{% endblock %}
 
     <div id="pie">
