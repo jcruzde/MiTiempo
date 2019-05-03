@@ -1,53 +1,72 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.template import loader
 from django.views.decorators.csrf import csrf_exempt
 import json
 from django.contrib.auth import logout, authenticate, login
 from django.contrib.auth.models import User
+from project_tiempo import settings
 
+
+def logout_user(request):
+    print('Voy a hacerle logout')
+    logout(request)
+
+def login_user(request):
+    usuario = request.POST['usuario']
+    contraseña = request.POST['contraseña']
+    user = authenticate(username=usuario, password=contraseña)
+    if user:
+        login(request, user)
+
+def add_municipio(request):
+
+    municipio = request.POST['municipio']
+    print('Nuevo municipio: ' + municipio)
+
+    try:
+        id = settings.municipios[municipio]['id'][-5:]
+        print('Este es su id: ' + id)
+    except KeyError:
+        print('Este municipio no existe')
 
 # Create your views here.
 def main(request):
 
-    if request.method == "GET":
-        return render(request, './main.html')
-    elif request.method == "POST":
-        if len(request.POST.keys()) == 1: # Solo tiene el token
-            logout(request)
-            return(render(request, './main.html'))
-        else:
-            usuario = request.POST['usuario']
-            contraseña = request.POST['contraseña']
-            user = authenticate(username=usuario, password=contraseña)
-            if user:
-                login(request, user)
-            return(render(request, './main.html'))
+    if request.method == "POST":
+        form_type = request.POST['form_type']
+        if form_type == 'logout':
+            logout_user(request)
+        elif form_type == 'login':
+            login_user(request)
 
-def usuario(request, usuario):
+    return(render(request, './main.html'))
 
-    # Controlar esto al haber un POST
-    try:
-        user = User.objects.get(username=usuario)
-        print('El usuario existe')
-        content = "Mi lista de municipios"
-    except User.DoesNotExist:
-        print('El usuario no existe')
-        content = "Este usuario no está registrado."
+def usuario(request, user_path):
 
     if request.method == "GET":
-        return render(request, './usuario.html')
+        try:
+            user = User.objects.get(username=user_path)
+            print('El usuario existe')
+            content = "Mi lista de municipios"
+        except User.DoesNotExist:
+            print('El usuario no está registrado, no tendrá contenido')
+            content = "Este usuario no está registrado."
+
     elif request.method == "POST":
-        if len(request.POST.keys()) == 1: # Solo tiene el token
-            logout(request)
-            return(render(request, './usuario.html'))
-        else:
-            usuario = request.POST['usuario']
-            contraseña = request.POST['contraseña']
-            user = authenticate(username=usuario, password=contraseña)
-            if user:
-                login(request, user)
-            return(render(request, './usuario.html'))
+        form_type = request.POST['form_type']
+        if form_type == 'logout':
+            logout_user(request)
+        elif form_type == 'login':
+            login_user(request)
+        elif form_type == 'css':
+            print('Quiere cambiar el css')
+        elif form_type == 'titulo':
+            print('Quiere cambiar su titulo')
+        elif form_type == 'municipio':
+            add_municipio(request)
+
+    return render(request, './usuario.html', {'path': user_path})
 
 
 def municipios(request):
@@ -58,3 +77,6 @@ def municipios_id(request, id):
 
 def info(request):
     return HttpResponse('Pagina de info')
+
+def favicon(request):
+    return HttpResponseRedirect('/')

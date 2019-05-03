@@ -4,14 +4,45 @@
 
     {% if request.user.is_authenticated %}
         - Página privada de {{user.username}} - <br><br>
-        {% ifequal user.username "jorge" %}
+        {% ifequal user.username path %}
             Puedes modificar tu pagina
+                <div id="form_css">
+                    <form action="" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="form_type" value="css">
+                        Cambia tu estilo CSS <br>
+                        Tamaño de letra: <input type="text" name="tamaño"> <br>
+                        Color de letra: <input type="text" name="letra"> <br>
+                        Color de fondo: <input type="text" name="fondo"> <br>
+                        <input type="submit" value="Enviar"> <br>
+                    </form>
+                </div>
+
+                <div id = "form_titulo">
+                    <form action="" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="form_type" value="titulo">
+                        Titulo de tu página personal <br>
+                        Título: <input type="text" name="titulo"> <br>
+                        <input type="submit" value="Enviar"> <br>
+                    </form>
+                </div>
+
+                <div id="form_municipio">
+                    <form action="" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="form_type" value="municipio">
+                        Nuevo municipio <br>
+                        Municipio: <input type="text" name="municipio"> <br>
+                        <input type="submit" value="Enviar"> <br>
+                    </form>
+                </div>
         {% else %}
-            {{user.username}} está loggeado, pero no puede modificar los municipios de {{request.path}}
+            {{user.username}} está loggeado, pero no puede modificar los municipios de {{path}}
         {% endifequal %}
     {% else %}
         - Página pública de un usuario - <br><br>
-        Estos son los municipios del usuario {{request.path}}
+        Estos son los municipios del usuario {{path}}
     {% endif %}
 
 {% endblock %}

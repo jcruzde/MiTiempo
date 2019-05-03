@@ -30,3 +30,11 @@
     font-size: x-large;
     background-color: skyblue;
 }
+
+#form_css, #form_titulo, #form_municipio {
+    margin: 0 auto;
+    text-align: center;
+    border-radius: 10px;
+    border: 1px solid #666666;
+    width: 500px;
+}
