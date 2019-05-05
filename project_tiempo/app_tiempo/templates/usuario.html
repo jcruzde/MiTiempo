@@ -1,0 +1,17 @@
+{% extends "./base.html" %}
+
+{% block content %}
+
+    {% if request.user.is_authenticated %}
+        - Página privada de {{user.username}} - <br><br>
+        {% ifequal user.username "jorge" %}
+            Puedes modificar tu pagina
+        {% else %}
+            {{user.username}} está loggeado, pero no puede modificar los municipios de {{request.path}}
+        {% endifequal %}
+    {% else %}
+        - Página pública de un usuario - <br><br>
+        Estos son los municipios del usuario {{request.path}}
+    {% endif %}
+
+{% endblock %}

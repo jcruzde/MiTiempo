@@ -9,34 +9,42 @@
   </head>
 
   <body>
-    <div id = "titulo">
-      <h1>MI TIEMPO</h1>
+
+    {% if request.user.is_authenticated %}
+    <div id="form_logout">
+      Hola {{ user.username }} !!
+      <form action="" method="POST">
+          {% csrf_token %}
+          <input type="submit" value="Logout">
+      </form>
     </div>
+    {% else %}
+      <div id="form_login">
+        <form action="" method="POST">
+            {% csrf_token %}
+            Usuario:
+            <input type="text" name="usuario"> <br>
+            Contras:
+            <input type="text" name="contraseña"> <br>
+            <input type="submit" value="Login">
+        </form>
+      </div>
+    {% endif %}
 
     <div id = "banner">
       <img src="static/images/banner.jpg"
            alt="banner.jpg"
-           width="200"
-           height="100">
+           width="400"
+           height="200">
     </div>
 
-    <div id = "parrafo">
-      Hola que tal
+    <div id="menu">
+        <ul>
+           <li><a href="http://127.0.0.1:8000/municipios" title="Todos">Todos</a></li>
+           <li><a href="http://127.0.0.1:8000/info" title="Info">Info</a></li>
+           <li><a href="http://127.0.0.1:8000/" title="Inicio">Inicio</a></li>
+        </ul>
     </div>
-
-    {% if request.user.is_authenticated %}
-    Hola {{ user.username }} !!
-      <form action="" method="POST">
-      {% csrf_token %}
-        <input type="submit" value="Logout">
-     {% else %}
-        <form action="" method="POST">
-        {% csrf_token %}
-        {{ form_in }}
-         <input type="submit" value="Login">
-         </form>
-    {% endif %}
-
 
     {% block content %}{{ content }}{% endblock %}
 

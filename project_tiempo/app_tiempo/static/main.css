@@ -8,7 +8,7 @@
 }
 
 #banner {
-    text-align: center;
+    text-align: left;
 }
 
 #pie {
@@ -16,5 +16,17 @@
     bottom: 40px;
     width: 100%;
     text-align: center;
+    background-color: skyblue;
+}
+
+#form_login, #form_logout {
+    position: absolute;
+    right: 50px;
+    background-color: skyblue;
+}
+
+#menu {
+    text-align: center;
+    font-size: x-large;
     background-color: skyblue;
 }
