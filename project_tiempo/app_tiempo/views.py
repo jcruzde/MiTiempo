@@ -73,7 +73,7 @@ def municipios(request):
     return HttpResponse('Pagina de municipios')
 
 def municipios_id(request, id):
-    return HttpResponse('Municipios con id')
+    return render(request, './municipios_id.html')
 
 def info(request):
     return HttpResponse('Pagina de info')
