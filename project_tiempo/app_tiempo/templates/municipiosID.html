@@ -1,0 +1,20 @@
+{% extends "./base.html" %}
+
+{% block content %}
+
+    <table>
+        {% if info|length == 0 %}
+            El municipio introducido no existe
+        {% else %}
+            {% for key, value in info.items %}
+            <tr>
+                <th> {{ key }} </th>
+                <td> {{ value }} </td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <a href="http://www.aemet.es/es/eltiempo/prediccion/municipios/{{url}}" >SU PAGINA DE AEMET</a>
+        {% endif %}
+
+{% endblock %}

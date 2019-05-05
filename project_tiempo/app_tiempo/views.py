@@ -6,6 +6,8 @@ import json
 from django.contrib.auth import logout, authenticate, login
 from django.contrib.auth.models import User
 from project_tiempo import settings
+from . import parser
+from .models import Municipio
 
 
 def logout_user(request):
@@ -26,7 +28,24 @@ def add_municipio(request):
 
     try:
         id = settings.municipios[municipio]['id'][-5:]
+        info = parser.get_info(id)
         print('Este es su id: ' + id)
+        # Añadir este Municipio a la Base de datos municipio
+
+        new_mun = Municipio(nombre = info['nombre'],
+                            mun_id = id,
+                            altitud = settings.municipios[municipio]['altitud'],
+                            latitud = settings.municipios[municipio]['latitud'],
+                            longitud = settings.municipios[municipio]['longitud'],
+                            maxima = info['maxima'],
+                            minima = info['minima'],
+                            prob_precipitacion = info['prob_precipitacion'],
+                            descripcion = info['estado_cielo'],
+                            url = settings.municipios[municipio]['url'],
+                            num_comentarios = 0,
+                            )
+        new_mun.save()
+
     except KeyError:
         print('Este municipio no existe')
 
@@ -70,13 +89,49 @@ def usuario(request, user_path):
 
 
 def municipios(request):
-    return HttpResponse('Pagina de municipios')
 
-def municipios_id(request, id):
-    return render(request, './municipios_id.html')
+    lista_municipios = Municipio.objects.all()
+
+    if request.method == "POST":
+        form_type = request.POST['form_type']
+        if form_type == 'logout':
+            logout_user(request)
+        elif form_type == 'login':
+            login_user(request)
+
+    return render(request, './municipios.html', {'lista_municipios': lista_municipios})
+
+def municipiosid(request, id):
+
+    if request.method == "POST":
+        form_type = request.POST['form_type']
+        if form_type == 'logout':
+            logout_user(request)
+        elif form_type == 'login':
+            login_user(request)
+
+    try:
+        info = parser.get_info(id)
+        url = settings.municipios[info['nombre']]['url']
+        # Actualizar esta info en la BD.
+        # Comprobar que ese id exista
+    except:
+        info = {}
+        url = ""
+        print('Este ID no existe')
+
+    return render(request, './municipiosID.html', {'info': info, 'url': url})
 
 def info(request):
-    return HttpResponse('Pagina de info')
+
+    if request.method == "POST":
+        form_type = request.POST['form_type']
+        if form_type == 'logout':
+            logout_user(request)
+        elif form_type == 'login':
+            login_user(request)
+
+    return render(request, './info.html')
 
 def favicon(request):
     return HttpResponseRedirect('/')

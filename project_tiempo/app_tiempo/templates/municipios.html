@@ -1,0 +1,16 @@
+{% extends "./base.html" %}
+
+
+{% block content %}
+    Muestra todos los municipios
+
+    {% if lista_municipios %}
+        Hay algun municipio <br>
+        {% for mun in lista_municipios %}
+            <li><h4><a href="municipios/{{ mun.mun_id }}">{{ mun.nombre }}</a></h4></li>
+        {% endfor %}
+    {% else %}
+        No hay ningún municipio
+    {% endif %}
+
+{% endblock %}
