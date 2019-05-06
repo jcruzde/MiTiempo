@@ -2,19 +2,41 @@
 
 {% block content %}
 
-    <table>
         {% if info|length == 0 %}
             El municipio introducido no existe
         {% else %}
-            {% for key, value in info.items %}
-            <tr>
-                <th> {{ key }} </th>
-                <td> {{ value }} </td>
-            </tr>
-            {% endfor %}
-        </table>
+            <div id="tabla_info">
+                <table>
+                    {% for key, value in info.items %}
+                    <tr>
+                        <th> {{ key }} </th>
+                        <td> {{ value }} </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
 
-        <a href="http://www.aemet.es/es/eltiempo/prediccion/municipios/{{url}}" >SU PAGINA DE AEMET</a>
+        <a href="http://www.aemet.es/es/eltiempo/prediccion/municipios/{{url}}" >SU PAGINA DE AEMET</a> <br><br>
+
+            Comentarios para este municipio: <br>
+            <div id = "comentarios">
+                {% for comentario in lista_comentarios %}
+                    {{comentario.usuario}}: {{comentario.comentario}} <br>
+                {% endfor %}
+            </div>
+
+            {% if request.user.is_authenticated %}
+                <br><br>Hola {{user.username}}!
+                Añade algún comentario a este municipio
+                <div id = "form_comentario">
+                    <form action="" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="form_type" value="comentario">
+                        Comentario: <input type="text" name="mensaje"> <br>
+                        <input type="submit" value="Enviar"> <br>
+                    </form>
+                </div>
+            {% endif %}
         {% endif %}
 
 {% endblock %}

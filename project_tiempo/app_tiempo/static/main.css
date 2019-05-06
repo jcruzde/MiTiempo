@@ -38,3 +38,14 @@
     border: 1px solid #666666;
     width: 500px;
 }
+
+#lista_usuarios {
+    position: absolute;
+    right: 50px;
+    text-align: center;
+    margin: 0 auto;
+    border-radius: 10px;
+    border: 1px solid #666666;
+    width: 400px;
+    background-color: #f8ee1b;
+}

@@ -4,9 +4,11 @@
     Mostrar todos los usuarios. <br>
 
     {% if usuarios %}
-        {% for usuario in usuarios %}
-            {{usuario}} {{ titulos|get_item:usuario }} <br>
-        {% endfor %}
+        <div id = "lista_usuarios">
+            {% for usuario in usuarios %}
+                <a href="http://127.0.0.1:8000/{{usuario}}">{{ titulos|get_item:usuario }} - Usuario: {{usuario}} </a> <br>
+            {% endfor %}
+        </div>
     {% endif %}
 
 {% endblock %}

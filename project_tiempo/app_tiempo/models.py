@@ -28,3 +28,12 @@ class Preferencia(models.Model):
 
     def __str__(self):
         return self.nombre
+
+class Comentario(models.Model):
+    municipio = models.ForeignKey(Municipio, on_delete=models.CASCADE)
+    comentario = models.TextField(null=True)
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    fecha = models.DateField(null=True)
+
+    def __str__(self):
+        return self.comentario
