@@ -1,4 +1,6 @@
 from django.db import models
+from django.contrib.auth.models import User
+
 
 # Create your models here.
 class Municipio(models.Model):
@@ -13,6 +15,16 @@ class Municipio(models.Model):
     descripcion = models.TextField(null=True)
     url = models.CharField(max_length = 100, null=True)
     num_comentarios = models.IntegerField(default = 0)
+
+    def __str__(self):
+        return self.nombre
+
+class Preferencia(models.Model):
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    titulo = models.TextField(null=True)
+    color_letra = models.CharField(max_length = 32, null=True)
+    tamaño_letra = models.CharField(max_length = 32, null=True)
+    color_fondo = models.CharField(max_length = 32, null=True)
 
     def __str__(self):
         return self.nombre

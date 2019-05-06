@@ -7,7 +7,7 @@ from django.contrib.auth import logout, authenticate, login
 from django.contrib.auth.models import User
 from project_tiempo import settings
 from . import parser
-from .models import Municipio
+from .models import Municipio, Preferencia
 
 
 def logout_user(request):
@@ -49,7 +49,26 @@ def add_municipio(request):
     except KeyError:
         print('Este municipio no existe')
 
+def cambiar_titulo(request):
+    nuevo_titulo = request.POST['titulo']
+    print('El nuevo titulo que quiere es: ' + nuevo_titulo)
+
+    # Este POST me llega solo cuando estoy autenticado si o si.
+    usuario = User.objects.get(username=request.user.username)
+    print('Voy a cambiarle el titulo a: ' + str(usuario))
+
+    try:
+        preferencia = Preferencia.objects.get(usuario=usuario)
+    except Preferencia.DoesNotExist:
+        print('Aún no existe, creo el  nuevo modelo')
+        preferencia = Preferencia(usuario=usuario)
+
+    preferencia.titulo = nuevo_titulo
+    preferencia.save()
+
+
 # Create your views here.
+
 def main(request):
 
     if request.method == "POST":
@@ -59,7 +78,17 @@ def main(request):
         elif form_type == 'login':
             login_user(request)
 
-    return(render(request, './main.html'))
+    usuarios = User.objects.all()
+    titulos = {}
+    for usuario in usuarios:
+        try:
+            preferencia = Preferencia.objects.get(usuario=usuario)
+            titulos[usuario] = preferencia.titulo
+        except Preferencia.DoesNotExist:
+            titulos[usuario] = "Página de " + str(usuario)
+
+
+    return(render(request, './main.html', {'usuarios': usuarios, 'titulos': titulos}))
 
 def usuario(request, user_path):
 
@@ -82,6 +111,7 @@ def usuario(request, user_path):
             print('Quiere cambiar el css')
         elif form_type == 'titulo':
             print('Quiere cambiar su titulo')
+            cambiar_titulo(request)
         elif form_type == 'municipio':
             add_municipio(request)
 

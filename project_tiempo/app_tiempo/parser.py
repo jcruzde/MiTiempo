@@ -1,5 +1,3 @@
-print('Hola que tal')
-
 from xml.sax.handler import ContentHandler
 from xml.sax import make_parser
 import sys
