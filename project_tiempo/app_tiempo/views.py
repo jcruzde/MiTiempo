@@ -7,7 +7,7 @@ from django.contrib.auth import logout, authenticate, login
 from django.contrib.auth.models import User
 from project_tiempo import settings
 from . import parser
-from .models import Municipio, Preferencia, Comentario
+from .models import Municipio, Preferencia, Comentario, Municipio_Usuario
 import datetime
 
 
@@ -22,6 +22,22 @@ def login_user(request):
     if user:
         login(request, user)
 
+def add_seleccion_usuario(request, municipio_inBD):
+    print('Añado a la seleccion de este usuario')
+    # Compruebo si ya existe esta asignación
+    usuario = User.objects.get(username=request.user.username)
+    municipio_usuario = Municipio_Usuario.objects.filter(usuario=usuario).filter(municipio=municipio_inBD)
+    if not municipio_usuario:
+        print('No tiene la asinación hecha')
+        municipio_usuario = Municipio_Usuario(usuario = usuario,
+                                              municipio = municipio_inBD,
+                                              fecha = datetime.date.today(),
+                                              )
+        municipio_usuario.save()
+    else:
+        print('Ya estaba asignado')
+
+
 def add_municipio(request):
 
     municipio = request.POST['municipio']
@@ -31,6 +47,7 @@ def add_municipio(request):
         id = settings.municipios[municipio]['id'][-5:]
         municipio_inBD = Municipio.objects.get(nombre=municipio)
         mensaje = "El municipio ya existe en la BD de municipios"
+        add_seleccion_usuario(request, municipio_inBD)
     except KeyError: # No es un municipio válido.
         mensaje = "Disculpe, el municipio introducido no existe"
     except Municipio.DoesNotExist: # Es un municipio válido y nuevo.
@@ -53,9 +70,30 @@ def add_municipio(request):
         new_mun.save()
         mensaje = "Añadido " + municipio + " a su lista de municipios"
 
-        # Añadir a la selección de un usuario
+        add_seleccion_usuario(request, new_mun)
 
     return mensaje
+
+def actualizar_municipio(id):
+    print('Actualizo la info del municipio')
+
+    municipio_inBD = Municipio.objects.get(mun_id = id)
+    info_nueva = parser.get_info(id)
+    municipio_inBD.maxima = info_nueva['maxima']
+    municipio_inBD.minima = info_nueva['minima']
+    municipio_inBD.prob_precipitacion = info_nueva['prob_precipitacion']
+    municipio_inBD.descripcion = info_nueva['estado_cielo']
+
+    municipio_inBD.save()
+
+def borrar_municipio(request):
+    municipio = request.POST['municipio']
+    municipio_inBD = Municipio.objects.get(nombre = municipio)
+    usuario = User.objects.get(username=request.user.username)
+    municipio_usuario = Municipio_Usuario.objects.filter(usuario = usuario).filter(municipio = municipio_inBD)
+    municipio_usuario.delete()
+    print('quiere eliminar un municipio: ' + municipio)
+
 
 def cambiar_titulo(request):
     nuevo_titulo = request.POST['titulo']
@@ -138,6 +176,7 @@ def usuario(request, user_path):
             print('El usuario existe')
             content = "Mi lista de municipios"
         except User.DoesNotExist:
+            user = None
             print('El usuario no está registrado, no tendrá contenido')
             content = "Este usuario no está registrado."
 
@@ -154,9 +193,16 @@ def usuario(request, user_path):
             mensaje = cambiar_titulo(request)
         elif form_type == 'municipio':
             mensaje = add_municipio(request)
-
+        elif form_type == 'quitar':
+            borrar_municipio(request)
+    try:
+        user = User.objects.get(username=user_path)
+    except User.DoesNotExist:
+        user = None
+    lista_municipios_user = Municipio_Usuario.objects.filter(usuario=user).order_by('-id')
     return render(request, './usuario.html', {'path': user_path,
-                                              'mensaje': mensaje})
+                                              'mensaje': mensaje,
+                                              'lista_municipios_user': lista_municipios_user})
 
 
 def municipios(request):
@@ -172,7 +218,8 @@ def municipios(request):
 
     return render(request, './municipios.html', {'lista_municipios': lista_municipios})
 
-def municipiosid(request, id):
+def municipios_id(request, id):
+
 
     if request.method == "POST":
         form_type = request.POST['form_type']
@@ -183,22 +230,25 @@ def municipiosid(request, id):
         elif form_type == 'comentario':
             add_comentario(request, id)
 
-    try: # Comprobar que exista ese municipio, si no está en la BD lo descarto.
-        info = parser.get_info(id) # Añadirle la longitud y latitud.
-        url = settings.municipios[info['nombre']]['url']
+    try:
         municipio = Municipio.objects.get(mun_id=id)
-        lista_comentarios = Comentario.objects.filter(municipio = municipio)
-        # Actualizar esta info en la BD.
-        # Comprobar que ese id exista
-    except:
-        info = {}
-        url = ""
-        lista_comentarios = {}
-        print('Este ID no existe')
 
-    return render(request, './municipiosID.html', {'info': info,
-                                                   'url': url,
+        # Si me hacen un GET actualizo la info.
+        if request.method == "GET":
+            actualizar_municipio(id)
+
+        # Sea GET o POST, muestro la info.
+        url = settings.municipios[municipio.nombre]['url']
+        lista_comentarios = Comentario.objects.filter(municipio=municipio)
+        print('Está en mi BD')
+    except Municipio.DoesNotExist:
+        municipio = ""
+        lista_comentarios = {}
+        print('No está en mi BD')
+
+    return render(request, './municipiosID.html', {'municipio': municipio,
                                                    'lista_comentarios': lista_comentarios})
+
 
 def info(request):
 

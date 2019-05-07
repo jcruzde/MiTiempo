@@ -2,10 +2,38 @@
 
 {% block content %}
 
+    Estos son los municipios del usuario {{path}} <br>
+    {% for item in lista_municipios_user %}
+            <div id="tabla_info">
+                Nombre: {{item.municipio.nombre}}<br>
+                ID: {{item.municipio.mun_id}}<br>
+                Altitud: {{item.municipio.altitud}}<br>
+                Latitud: {{item.municipio.latitud}}<br>
+                Longitud: {{item.municipio.longitud}}<br>
+                Temperatura máxima: {{item.municipio.maxima}}<br>
+                Temperatura mínima: {{item.municipio.minima}}<br>
+                Probabilidad de precipitación: {{item.municipio.prob_precipitacion}}<br>
+                Descripción: {{item.municipio.descripcion}}<br>
+                <a href="http://www.aemet.es/es/eltiempo/prediccion/municipios/{{item.municipio.url}}" >Su página de la AEMET</a> <br><br>
+            </div>
+
+            {% if request.user.is_authenticated %}
+                {% ifequal user.username path %}
+                    <div id = "form_quitar">
+                        <form action="" method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" name="form_type" value="quitar">
+                            <input type="hidden" name="municipio" value="{{item.municipio.nombre}}">
+                            <input type="submit" value="Quitar"> <br>
+                        </form>
+                    </div>
+                {% endifequal %}
+            {% endif %}
+    {% endfor %}
+
     {% if request.user.is_authenticated %}
-        - Página privada de {{user.username}} - <br><br>
         {% ifequal user.username path %}
-            Puedes modificar tu pagina
+            <br><br> Puedes modificar tu pagina
                 <div id="form_css">
                     <form action="" method="POST">
                         {% csrf_token %}
@@ -40,11 +68,8 @@
 
                 {{mensaje}}
         {% else %}
-            {{user.username}} está loggeado, pero no puede modificar los municipios de {{path}}
+            <br><br> {{user.username}} está loggeado, pero no puede modificar los municipios de {{path}}
         {% endifequal %}
-    {% else %}
-        - Página pública de un usuario - <br><br>
-        Estos son los municipios del usuario {{path}}
     {% endif %}
 
 {% endblock %}

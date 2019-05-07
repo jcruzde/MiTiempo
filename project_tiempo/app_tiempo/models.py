@@ -37,3 +37,11 @@ class Comentario(models.Model):
 
     def __str__(self):
         return self.comentario
+
+class Municipio_Usuario(models.Model):
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    municipio = models.ForeignKey(Municipio, on_delete=models.CASCADE)
+    fecha = models.DateField(null = True)
+
+    def __str__(self):
+        return self.municipio.nombre + ' -- ' + str(self.usuario)

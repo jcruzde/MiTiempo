@@ -79,7 +79,7 @@ def get_info(id):
             if self.in_content:
                 self.theContent = self.theContent + chars
 
-    print('EMPIEZO A PARSEAR' + '\n')
+    print('\n' + '--- EMPIEZO A PARSEAR' + '\n')
 
     NewsParser = make_parser()  # Parser genérico de sax
     NewsHandler = CounterHandler()  # Me quedo con las cosas que me interesan
@@ -88,7 +88,7 @@ def get_info(id):
     xmlPueblo = urllib.request.urlopen("http://www.aemet.es/xml/municipios/localidad_" + str(id) + ".xml")
     NewsParser.parse(xmlPueblo)
 
-    print('\n' + 'FIN DE PARSEAR')
+    print('\n' + '---FIN DE PARSEAR' + '\n')
 
     return info
 
