@@ -27,14 +27,14 @@
             Usuario:
             <input type="text" name="usuario"> <br>
             Contras:
-            <input type="text" name="contraseña"> <br>
+            <input type="password" name="contraseña"> <br>
             <input type="submit" value="Login">
         </form>
       </div>
     {% endif %}
 
     <div id = "banner">
-      <img src="static/images/banner.jpg"
+      <img src="{% static "banner.jpg" %}"
            alt="banner.jpg"
            width="400"
            height="200">

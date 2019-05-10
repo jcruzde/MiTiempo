@@ -81,16 +81,28 @@ def get_info(id):
 
     print('\n' + '--- EMPIEZO A PARSEAR' + '\n')
 
-    NewsParser = make_parser()  # Parser genérico de sax
-    NewsHandler = CounterHandler()  # Me quedo con las cosas que me interesan
-    NewsParser.setContentHandler(NewsHandler)
+    try:
+        NewsParser = make_parser()  # Parser genérico de sax
+        NewsHandler = CounterHandler()  # Me quedo con las cosas que me interesan
+        NewsParser.setContentHandler(NewsHandler)
 
-    xmlPueblo = urllib.request.urlopen("http://www.aemet.es/xml/municipios/localidad_" + str(id) + ".xml")
-    NewsParser.parse(xmlPueblo)
+        xmlPueblo = urllib.request.urlopen("http://www.aemet.es/xml/municipios/localidad_" + str(id) + ".xml")
+        NewsParser.parse(xmlPueblo)
+
+    except:
+        info['día'] = 'No hay información disponible'
+        info['nombre'] = 'No hay información disponible'
+        info['prob_precipitacion'] = None
+        info['maxima'] = None
+        info['minima'] = None
+        info['estado_cielo'] = 'No hay información disponible'
+        print('No hay información disponible')
 
     print('\n' + '---FIN DE PARSEAR' + '\n')
 
     return info
+
+
 
 ''' Info es un diccionario con:
 dia

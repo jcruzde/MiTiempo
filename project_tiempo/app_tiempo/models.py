@@ -6,6 +6,8 @@ from django.contrib.auth.models import User
 class Municipio(models.Model):
     nombre = models.CharField(max_length = 100, null=True)
     mun_id = models.CharField(max_length = 32, null=True)
+    # Pongo el id como un Char porque si lo pongo como int, y
+    # en /municipios/id el id es 0235, coge solo 235. Si es str no pasa.
     altitud = models.CharField(max_length = 100, null=True)
     latitud = models.CharField(max_length = 100, null=True)
     longitud = models.CharField(max_length = 100, null=True)

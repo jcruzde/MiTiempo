@@ -23,12 +23,12 @@ def login_user(request):
         login(request, user)
 
 def add_seleccion_usuario(request, municipio_inBD):
-    print('Añado a la seleccion de este usuario')
+    print('Voy a ver si lo añado a la selección de este usuario')
     # Compruebo si ya existe esta asignación
     usuario = User.objects.get(username=request.user.username)
     municipio_usuario = Municipio_Usuario.objects.filter(usuario=usuario).filter(municipio=municipio_inBD)
     if not municipio_usuario:
-        print('No tiene la asinación hecha')
+        print('No tiene la asinación hecha, lo añado')
         municipio_usuario = Municipio_Usuario(usuario = usuario,
                                               municipio = municipio_inBD,
                                               fecha = datetime.date.today(),
@@ -41,7 +41,7 @@ def add_seleccion_usuario(request, municipio_inBD):
 def add_municipio(request):
 
     municipio = request.POST['municipio']
-    print('Nuevo municipio: ' + municipio)
+    print('Nuevo municipio recibido para asignar: ' + municipio)
 
     try: # Compruebo si existe el municipio
         id = settings.municipios[municipio]['id'][-5:]
@@ -77,8 +77,11 @@ def add_municipio(request):
 def actualizar_municipio(id):
     print('Actualizo la info del municipio')
 
+    # Sé que va a estar en mi BD porque ya he hecho la
+    # comprobación en la view anterior.
     municipio_inBD = Municipio.objects.get(mun_id = id)
     info_nueva = parser.get_info(id)
+    print('La info  nueva que recibo: ' + str(info_nueva['estado_cielo']))
     municipio_inBD.maxima = info_nueva['maxima']
     municipio_inBD.minima = info_nueva['minima']
     municipio_inBD.prob_precipitacion = info_nueva['prob_precipitacion']
@@ -136,12 +139,11 @@ def add_comentario(request, id):
         municipio.num_comentarios = num_comentarios
         municipio.save()
 
+    # A este caso nunca va a llegar, porque ya lo controlo antes.
+    # Lo pongo por si acaso.
     except Municipio.DoesNotExist:
         print('Recibo un comentario, pero lo no guardo porque' +
               ' ese municipio no ha sido seleccionado por ningun usuario')
-
-    # Sumar el contador de comentarios.
-
 
 ########################################################################
 # Create your views here.
@@ -164,8 +166,18 @@ def main(request):
         except Preferencia.DoesNotExist:
             titulos[usuario] = "Página de " + str(usuario)
 
+    municipios = Municipio.objects.all()
+    municipios_comentados = [] # Lista de municipios que tienen algún comentario
+    for municipio in municipios:
+        if municipio.num_comentarios:
+            municipios_comentados.append(municipio)
 
-    return(render(request, './main.html', {'usuarios': usuarios, 'titulos': titulos}))
+    # Lista de municipios solo que tienen comentarios, en orden decreciente.
+    municipios_comentados.sort(key=lambda Municipio: Municipio.num_comentarios, reverse=True)
+
+    return(render(request, './main.html', {'usuarios': usuarios,
+                                           'titulos': titulos,
+                                           'municipios_comentados': municipios_comentados}))
 
 def usuario(request, user_path):
     mensaje = ""
@@ -204,7 +216,6 @@ def usuario(request, user_path):
                                               'mensaje': mensaje,
                                               'lista_municipios_user': lista_municipios_user})
 
-
 def municipios(request):
 
     lista_municipios = Municipio.objects.all()
@@ -231,17 +242,23 @@ def municipios_id(request, id):
             add_comentario(request, id)
 
     try:
+        print('Voy a comprobar si tengo en mi BD el municipio con id: ' + str(id))
         municipio = Municipio.objects.get(mun_id=id)
 
         # Si me hacen un GET actualizo la info.
         if request.method == "GET":
             actualizar_municipio(id)
 
+        # Tras haber actualizado la info en la BD, recupero
+        # la info actualizada
+        municipio = Municipio.objects.get(mun_id=id)
+
         # Sea GET o POST, muestro la info.
         url = settings.municipios[municipio.nombre]['url']
         lista_comentarios = Comentario.objects.filter(municipio=municipio)
         print('Está en mi BD')
     except Municipio.DoesNotExist:
+        # /municipio/id => Ese id no lo tengo en mi BD (nadie lo ha seleccionado)
         municipio = ""
         lista_comentarios = {}
         print('No está en mi BD')
