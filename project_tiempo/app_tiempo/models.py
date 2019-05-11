@@ -29,7 +29,7 @@ class Preferencia(models.Model):
     color_fondo = models.CharField(max_length = 32, null=True)
 
     def __str__(self):
-        return self.nombre
+        return self.usuario.username
 
 class Comentario(models.Model):
     municipio = models.ForeignKey(Municipio, on_delete=models.CASCADE)

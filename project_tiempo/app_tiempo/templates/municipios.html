@@ -2,7 +2,26 @@
 
 
 {% block content %}
-    Muestra todos los municipios
+
+    <div id="form_filtro_temp">
+        <form action="" method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="form_type" value="filtro_temp">
+            Rango de temperatura máxima <br><br>
+            Máxima: <input type="number" name="maxima" value={{filtro_max}}> <br>
+            Mínima: <input type="number" name="minima" value={{filtro_min}}> <br>
+            <input type="submit" value="Enviar"> <br>
+        </form>
+    </div>
+
+    {% if filtro_max %}
+        <h2> Solo los que tienen Temperatura Máxima menor que: {{filtro_max}} </h2>
+    {% endif %}
+
+    {% if filtro_min %}
+        <h2> Solo los que tienen Temperatura Máxima mayor que: {{filtro_min}} </h2>
+    {% endif %}
+
 
     {% if lista_municipios %}
         Hay algun municipio <br>

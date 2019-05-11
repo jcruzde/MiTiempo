@@ -10,6 +10,11 @@ from . import parser
 from .models import Municipio, Preferencia, Comentario, Municipio_Usuario
 import datetime
 
+global filtro_max
+filtro_max = None
+global filtro_min
+filtro_min = None
+
 
 def logout_user(request):
     print('Voy a hacerle logout')
@@ -107,6 +112,7 @@ def cambiar_titulo(request):
     print('Voy a cambiarle el titulo a: ' + str(usuario))
 
     try:
+        # Compruebo si ya tiene algo asignado este usuario.
         preferencia = Preferencia.objects.get(usuario=usuario)
     except Preferencia.DoesNotExist:
         print('Aún no existe, creo el  nuevo modelo')
@@ -144,6 +150,39 @@ def add_comentario(request, id):
     except Municipio.DoesNotExist:
         print('Recibo un comentario, pero lo no guardo porque' +
               ' ese municipio no ha sido seleccionado por ningun usuario')
+
+def filtro_temp(filtro_max,filtro_min):
+    municipios = Municipio.objects.all()
+    lista_municipios = []
+
+    print('maxima que recibo: ' + str(filtro_max))
+    print('minima que recibo: ' + str(filtro_min))
+
+
+    if filtro_max and filtro_min:
+        print('Recibo maxima y minima')
+        for municipio in municipios:
+            # Para manejar el caso de que no haya conexión.
+            if municipio.maxima == None or municipio.minima == None:
+                continue
+            if municipio.maxima <= int(filtro_max) and municipio.maxima >= int(filtro_min):
+                lista_municipios.append(municipio)
+    elif filtro_max:
+        print('Recibo solo maxima')
+        for municipio in municipios:
+            if municipio.maxima == None or municipio.minima == None:
+                continue
+            if municipio.maxima <= int(filtro_max):
+                lista_municipios.append(municipio)
+    elif filtro_min:
+        print('Recibo solo minima')
+        for municipio in municipios:
+            if municipio.maxima == None or municipio.minima == None:
+                continue
+            if municipio.maxima>= int(filtro_min):
+                lista_municipios.append(municipio)
+
+    return lista_municipios
 
 ########################################################################
 # Create your views here.
@@ -212,11 +251,23 @@ def usuario(request, user_path):
     except User.DoesNotExist:
         user = None
     lista_municipios_user = Municipio_Usuario.objects.filter(usuario=user).order_by('-id')
+    try:
+        preferencias = Preferencia.objects.filter(usuario=user)[0]
+    except:
+        # Maneja el caso de que el usuario aún no haya establecido ninguna preferencia.
+        preferencias = []
+
+    # El filtro me devuelve una lista. Me quedo con el primer elemento,
+    # que será el único que corresponda con ese nombre.
     return render(request, './usuario.html', {'path': user_path,
                                               'mensaje': mensaje,
-                                              'lista_municipios_user': lista_municipios_user})
+                                              'lista_municipios_user': lista_municipios_user,
+                                              'preferencias': preferencias})
 
 def municipios(request):
+
+    global filtro_max
+    global filtro_min
 
     lista_municipios = Municipio.objects.all()
 
@@ -226,8 +277,25 @@ def municipios(request):
             logout_user(request)
         elif form_type == 'login':
             login_user(request)
+        elif form_type == 'filtro_temp':
+            print('Quiere filtrar la temperatura')
+            filtro_max = request.POST['maxima']
+            filtro_min = request.POST['minima']
 
-    return render(request, './municipios.html', {'lista_municipios': lista_municipios})
+    elif request.method == "GET":
+        filtro_max = None
+        filtro_min = None
+        lista_municipios = Municipio.objects.all()
+
+
+    # Para evitar que al hacer el logout sobre un filtro
+    # me vuelvan a aparecer todos los municipios
+    if filtro_max or filtro_min:
+        lista_municipios = filtro_temp(filtro_max,filtro_min)
+
+    return render(request, './municipios.html', {'lista_municipios': lista_municipios,
+                                                 'filtro_max': filtro_max,
+                                                 'filtro_min': filtro_min})
 
 def municipios_id(request, id):
 
