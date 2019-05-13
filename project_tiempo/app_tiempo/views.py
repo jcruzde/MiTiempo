@@ -184,6 +184,28 @@ def filtro_temp(filtro_max,filtro_min):
 
     return lista_municipios
 
+def cambiar_css(request):
+    print('Voy a actualziar su css')
+    usuario = User.objects.get(username=request.user)
+    color_letra = request.POST['letra']
+    tamaño_letra = request.POST['tamaño']
+    color_fondo = request.POST['fondo']
+
+    preferencia = Preferencia.objects.get(usuario=usuario)
+
+    if tamaño_letra:
+        print('Nuevo tamaño de letra: ' + tamaño_letra)
+        preferencia.tamaño_letra = tamaño_letra
+    if color_fondo:
+        print('Nuevo color de fondo: ' + color_fondo)
+        preferencia.color_fondo = color_fondo
+    if color_letra:
+        print('Nuevo color de letra: ' + color_letra)
+        preferencia.color_letra = color_letra
+
+    preferencia.save()
+
+
 ########################################################################
 # Create your views here.
 
@@ -239,6 +261,7 @@ def usuario(request, user_path):
             login_user(request)
         elif form_type == 'css':
             print('Quiere cambiar el css')
+            cambiar_css(request)
         elif form_type == 'titulo':
             print('Quiere cambiar su titulo')
             mensaje = cambiar_titulo(request)
@@ -283,12 +306,14 @@ def municipios(request):
             filtro_min = request.POST['minima']
 
     elif request.method == "GET":
+        # Para que cualdo vuelvo a pinchar en 'Todos' del menu, aparezcan
+        # todos otra vez, y no la selección.
         filtro_max = None
         filtro_min = None
         lista_municipios = Municipio.objects.all()
 
 
-    # Para evitar que al hacer el logout sobre un filtro
+    # Para evitar que al hacer el logout sobre un filtrado
     # me vuelvan a aparecer todos los municipios
     if filtro_max or filtro_min:
         lista_municipios = filtro_temp(filtro_max,filtro_min)
@@ -348,3 +373,34 @@ def info(request):
 
 def favicon(request):
     return HttpResponseRedirect('/')
+
+def servir_css(request):
+    if request.method == "GET" and request.user.is_authenticated:
+        print('Sirvo un css personalizado')
+        user = User.objects.get(username=request.user)
+        try:
+            # Al crear un usuario nuevo, no se crean sus preferencias.
+            # Si nada más crearlo quiero hago esto de abajo, no lo encuentra.
+            # Solo cuando envío algo del formulario (o vacío) es cuando se crea
+            # la entrada en la BD con los valores por defecto.
+            preferencia = Preferencia.objects.get(usuario=user)
+            print('Sus preferencias son: ' + str(preferencia.color_letra) + str(preferencia.color_fondo) + str(preferencia.tamaño_letra))
+            color_letra = preferencia.color_letra
+            tamaño_letra = preferencia.tamaño_letra
+            color_fondo = preferencia.color_fondo
+        except:
+            # Para un usuario que se acaba de crear y no ha hecho POST del
+            # formulario de preferencias.
+            color_letra = 'black'
+            tamaño_letra = 'normal'
+            color_fondo = 'white'
+    else:
+        color_letra = 'black'
+        tamaño_letra = 'normal'
+        color_fondo = 'white'
+
+
+    return render(request, './main.css',{'color_letra': color_letra,
+                                         'tamaño_letra': tamaño_letra,
+                                         'color_fondo': color_fondo},
+                                        content_type='text/css')

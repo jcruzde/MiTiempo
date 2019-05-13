@@ -24,9 +24,9 @@ class Municipio(models.Model):
 class Preferencia(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
     titulo = models.TextField(null=True)
-    color_letra = models.CharField(max_length = 32, null=True)
-    tamaño_letra = models.CharField(max_length = 32, null=True)
-    color_fondo = models.CharField(max_length = 32, null=True)
+    color_letra = models.CharField(max_length = 32, default='black', null=True)
+    tamaño_letra = models.CharField(max_length = 32, default='normal', null=True)
+    color_fondo = models.CharField(max_length = 32, default='white', null=True)
 
     def __str__(self):
         return self.usuario.username

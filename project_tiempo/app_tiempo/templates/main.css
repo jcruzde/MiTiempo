@@ -1,3 +1,10 @@
+html {
+    background-color: {{color_fondo}};
+    font-size: {{tamaño_letra}};
+    color: {{color_letra}}
+
+}
+
 #titulo {
     text-align: center;
     color: darkblue;
