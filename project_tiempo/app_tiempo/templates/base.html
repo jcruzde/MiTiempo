@@ -4,8 +4,9 @@
 <html lang="en" >
   <head>
     <meta charset="utf-8" />
-    <title>MI TIEMPO</title>
+    <title>MiTiempo</title>
     <link rel="stylesheet" href="http://127.0.0.1:8000/css" %}">
+    <link rel="shortcut icon" type="image/ico" href={% static "favicon.ico" %}/>
   </head>
 
   <body>
@@ -42,9 +43,10 @@
 
     <div id="menu">
         <ul>
+           <li><a href="http://127.0.0.1:8000/" title="Inicio">Inicio</a></li>
            <li><a href="http://127.0.0.1:8000/municipios" title="Todos">Todos</a></li>
            <li><a href="http://127.0.0.1:8000/info" title="Info">Info</a></li>
-           <li><a href="http://127.0.0.1:8000/" title="Inicio">Inicio</a></li>
+           <li><a href="?format=xml" title="XML">Descargar esta página como XML</a></li>
         </ul>
     </div>
 

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<root>
+  {% for municipio in lista_municipios %}
+    <municipio nombre="{{municipio.nombre}}">
+      <id>{{municipio.mun_id}}</id>
+      <altitud>{{municipio.altitud}}</altitud>
+      <latitud>{{municipio.latitud}}</latitud>
+      <longitud>{{municipio.longitud}}</longitud>
+      <maxima>{{municipio.maxima}}</maxima>
+      <minima>{{municipio.minima}}</minima>
+      <prob_precipitacion>{{municipio.prob_precipitacion}}</prob_precipitacion>
+      <descripcion>{{municipio.descripcion}}</descripcion>
+      <a href = "http://www.aemet.es/xml/municipios/localidad_{{municipio.mun_id}}.xml">XML de la AEMET</a>
+    </municipio>
+  {% endfor %}
+</root>

@@ -10,21 +10,20 @@ html {
     color: darkblue;
 }
 
-#parrafo {
-    color: blue
-}
-
 #banner {
     text-align: left;
 }
 
 #pie {
-    position: absolute;
-    bottom: 0px;
-    width: 100%;
+    position: relative;
+    margin-top: -0px;
+    height: 20px;
+    clear: both;
     text-align: center;
     background-color: skyblue;
 }
+
+
 
 #form_login, #form_logout {
     position: absolute;
@@ -48,6 +47,7 @@ html {
 
 #lista_usuarios {
     position: absolute;
+    top: 400px;
     right: 50px;
     text-align: center;
     margin: 0 auto;

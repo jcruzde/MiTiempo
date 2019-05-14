@@ -9,6 +9,7 @@ from project_tiempo import settings
 from . import parser
 from .models import Municipio, Preferencia, Comentario, Municipio_Usuario
 import datetime
+from django.views.generic.base import RedirectView
 
 global filtro_max
 filtro_max = None
@@ -236,13 +237,18 @@ def main(request):
     # Lista de municipios solo que tienen comentarios, en orden decreciente.
     municipios_comentados.sort(key=lambda Municipio: Municipio.num_comentarios, reverse=True)
 
-    return(render(request, './main.html', {'usuarios': usuarios,
-                                           'titulos': titulos,
-                                           'municipios_comentados': municipios_comentados}))
+    if request.method == "GET" and 'format' in request.GET:
+        print('Me piden el xml')
+        return (render(request, './main.xml', {'lista_municipios': municipios_comentados}, content_type='text/xml'))
+    else:
+        return(render(request, './main.html', {'usuarios': usuarios,
+                                               'titulos': titulos,
+                                               'municipios_comentados': municipios_comentados}))
 
 def usuario(request, user_path):
     mensaje = ""
 
+    # Esto sobraría¿?
     if request.method == "GET":
         try:
             user = User.objects.get(username=user_path)
@@ -274,6 +280,9 @@ def usuario(request, user_path):
     except User.DoesNotExist:
         user = None
     lista_municipios_user = Municipio_Usuario.objects.filter(usuario=user).order_by('-id')
+    # order_by es para que aparezca primero el último que ha seleccionado. El id es el
+    # campo que siempre se añade en las BD (que está implícito en el admin site).
+    # El - es para que lo ordene de manera descendente.
     try:
         preferencias = Preferencia.objects.filter(usuario=user)[0]
     except:
@@ -282,10 +291,14 @@ def usuario(request, user_path):
 
     # El filtro me devuelve una lista. Me quedo con el primer elemento,
     # que será el único que corresponda con ese nombre.
-    return render(request, './usuario.html', {'path': user_path,
-                                              'mensaje': mensaje,
-                                              'lista_municipios_user': lista_municipios_user,
-                                              'preferencias': preferencias})
+    if request.method == "GET" and 'format' in request.GET:
+        print('Me piden el xml')
+        return (render(request, './usuario.xml', {'lista_municipios_user': lista_municipios_user}, content_type='text/xml'))
+    else:
+        return render(request, './usuario.html', {'path': user_path,
+                                                  'mensaje': mensaje,
+                                                  'lista_municipios_user': lista_municipios_user,
+                                                  'preferencias': preferencias})
 
 def municipios(request):
 
@@ -318,9 +331,13 @@ def municipios(request):
     if filtro_max or filtro_min:
         lista_municipios = filtro_temp(filtro_max,filtro_min)
 
-    return render(request, './municipios.html', {'lista_municipios': lista_municipios,
-                                                 'filtro_max': filtro_max,
-                                                 'filtro_min': filtro_min})
+    if request.method == "GET" and 'format' in request.GET:
+        print('Me piden el xml')
+        return (render(request, './main.xml', {'lista_municipios': lista_municipios}, content_type='text/xml'))
+    else:
+        return render(request, './municipios.html', {'lista_municipios': lista_municipios,
+                                                     'filtro_max': filtro_max,
+                                                     'filtro_min': filtro_min})
 
 def municipios_id(request, id):
 
@@ -370,9 +387,6 @@ def info(request):
             login_user(request)
 
     return render(request, './info.html')
-
-def favicon(request):
-    return HttpResponseRedirect('/')
 
 def servir_css(request):
     if request.method == "GET" and request.user.is_authenticated:

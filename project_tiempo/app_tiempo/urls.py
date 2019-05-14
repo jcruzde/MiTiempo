@@ -2,7 +2,6 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('favicon.ico', views.favicon),
     path('', views.main),
     path('css', views.servir_css),
     path('info', views.info),
