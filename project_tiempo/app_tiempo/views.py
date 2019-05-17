@@ -7,15 +7,16 @@ from django.contrib.auth import logout, authenticate, login
 from django.contrib.auth.models import User
 from project_tiempo import settings
 from . import parser
-from .models import Municipio, Preferencia, Comentario, Municipio_Usuario
+from .models import Municipio, Preferencia, Comentario, Municipio_Usuario, Navegador
 import datetime
 from django.views.generic.base import RedirectView
+import random
+import string
 
 global filtro_max
 filtro_max = None
 global filtro_min
 filtro_min = None
-
 
 def logout_user(request):
     print('Voy a hacerle logout')
@@ -66,6 +67,7 @@ def add_municipio(request):
                             altitud = settings.municipios[municipio]['altitud'],
                             latitud = settings.municipios[municipio]['latitud'],
                             longitud = settings.municipios[municipio]['longitud'],
+                            dia = info['dia'],
                             maxima = info['maxima'],
                             minima = info['minima'],
                             prob_precipitacion = info['prob_precipitacion'],
@@ -92,6 +94,8 @@ def actualizar_municipio(id):
     municipio_inBD.minima = info_nueva['minima']
     municipio_inBD.prob_precipitacion = info_nueva['prob_precipitacion']
     municipio_inBD.descripcion = info_nueva['estado_cielo']
+    municipio_inBD.dia = info_nueva['dia']
+
 
     municipio_inBD.save()
 
@@ -206,6 +210,70 @@ def cambiar_css(request):
 
     preferencia.save()
 
+def generate_cookie_id():
+    return ''.join(random.choices(string.ascii_lowercase + string.digits, k=32))
+
+def seleccion_municipios(municipios_comentados,estado):
+    print('Estado por el que voy: ' +  str(estado))
+    if estado == 0:
+        seleccion_municipios = municipios_comentados
+        title = ""
+    elif estado == 1:
+        # Solo los que prob_precip > 0
+        seleccion_municipios = []
+        for municipio in municipios_comentados:
+            if municipio.prob_precipitacion > 0:
+                seleccion_municipios.append(municipio)
+        title = "Municipios con probabilidad de precipitación > 0"
+    elif estado == 2:
+        # Solo los que prob_precip == 0
+        seleccion_municipios = []
+        for municipio in municipios_comentados:
+            if municipio.prob_precipitacion == 0:
+                seleccion_municipios.append(municipio)
+        title = "Municipios con probabilidad de precipitación = 0"
+
+    return seleccion_municipios, title
+
+
+def gestion_boton(request,usuarios,titulos,municipios_comentados):
+
+    envio_cookie = False
+
+    # Solo aquí es cuando me interesa enviar o detectar cookie de navegador
+    if request.COOKIES.get('cookie_id'):
+        cookie_id = request.COOKIES.get('cookie_id')
+        navegador = Navegador.objects.get(cookie_id=cookie_id)
+        print('Este navegador ya tiene una cookie de navegador: ' + navegador.cookie_id)
+        print('Su estado es: ' + str(navegador.estado))
+        if navegador.estado == 2:
+            navegador.estado = 0
+        else:
+            navegador.estado += 1
+
+        navegador.save()
+
+    else:
+        print('Este navegador todavía no lo he fichado')
+        envio_cookie = True
+        cookie_id = generate_cookie_id()
+        print('Le asigno una cookie_id: ' + str(cookie_id))
+        navegador = Navegador(cookie_id= cookie_id,
+                                  estado = 1)
+        navegador.save()
+
+    municipios_mostrados,title = seleccion_municipios(municipios_comentados, navegador.estado)
+
+    response = (render(request, './main.html', {'usuarios': usuarios,
+                                                'titulos': titulos,
+                                                'municipios_comentados': municipios_mostrados,
+                                                'title': title}))
+    if envio_cookie:
+        # Seguro que tengo la cookie_id inicializada
+        response.set_cookie('cookie_id', cookie_id)
+
+    return response
+
 
 ########################################################################
 # Create your views here.
@@ -236,14 +304,26 @@ def main(request):
 
     # Lista de municipios solo que tienen comentarios, en orden decreciente.
     municipios_comentados.sort(key=lambda Municipio: Municipio.num_comentarios, reverse=True)
+    if len(municipios_comentados) > 10:
+        print('Hay más de 10 en la lista')
+        municipios_comentados = municipios_comentados[0:10]
+
+    # Si veo solo los que salen del boton, el xml me debería mostrar solo esos.
+    # Si veo una seleccion y hago login/logout me vuelve a mostrar todos.
 
     if request.method == "GET" and 'format' in request.GET:
         print('Me piden el xml')
-        return (render(request, './main.xml', {'lista_municipios': municipios_comentados}, content_type='text/xml'))
+        response = (render(request, './main.xml', {'lista_municipios': municipios_comentados}, content_type='text/xml'))
+        return response
+    elif request.method == "POST" and request.POST['form_type'] == 'boton':
+        print('Boton pulsado')
+        response = gestion_boton(request,usuarios,titulos,municipios_comentados)
+        return response
     else:
-        return(render(request, './main.html', {'usuarios': usuarios,
+        response = (render(request, './main.html', {'usuarios': usuarios,
                                                'titulos': titulos,
                                                'municipios_comentados': municipios_comentados}))
+        return response
 
 def usuario(request, user_path):
     mensaje = ""
@@ -411,10 +491,10 @@ def servir_css(request):
     else:
         color_letra = 'black'
         tamaño_letra = 'normal'
-        color_fondo = 'white'
+        color_fondo = ''
 
 
-    return render(request, './main.css',{'color_letra': color_letra,
+    return render(request, './main2.css',{'color_letra': color_letra,
                                          'tamaño_letra': tamaño_letra,
                                          'color_fondo': color_fondo},
                                         content_type='text/css')

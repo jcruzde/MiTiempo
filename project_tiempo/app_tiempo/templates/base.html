@@ -9,52 +9,60 @@
     <link rel="shortcut icon" type="image/ico" href={% static "favicon.ico" %}/>
   </head>
 
-  <body>
+  <div id="cascara">
+      <div id="body">
+      <body>
+        {% block content %}{{ content }}{% endblock %}
 
-    {% if request.user.is_authenticated %}
-    <div id="form_logout">
-      Hola {{ user.username }} !!
-      <form action="" method="POST">
-          {% csrf_token %}
-          <input type="hidden" name="form_type" value="logout">
-          <input type="submit" value="Logout">
-      </form>
-    </div>
-    {% else %}
-      <div id="form_login">
-        <form action="" method="POST">
-            {% csrf_token %}
-            <input type="hidden" name="form_type" value="login">
-            Usuario:
-            <input type="text" name="usuario"> <br>
-            Contras:
-            <input type="password" name="contraseña"> <br>
-            <input type="submit" value="Login">
-        </form>
+
+      </body>
       </div>
-    {% endif %}
+  </div>
 
-    <div id = "banner">
-      <img src="{% static "banner.jpg" %}"
-           alt="banner.jpg"
-           width="400"
-           height="200">
-    </div>
+  <div id = "banner">
+          <img src="{% static "banner.png" %}"
+               alt="banner.jpg"
+               width="360"
+               height="350">
+        </div>
+  <div id="letra_margen">
+      MiTiempo
+  </div>
+  <div id="entrar_salir">
+        {% if request.user.is_authenticated %}
+        <div id="form_logout">
+          Bienvenido {{ user.username }}!
+          <form action="" method="POST">
+              {% csrf_token %}
+              <input type="hidden" name="form_type" value="logout">
+              <input type="submit" value="Logout">
+          </form>
+        </div>
+        {% else %}
+          <div id="form_login">
+            <form action="" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="form_type" value="login">
+                Usuario:
+                <input type="text" name="usuario"> <br>
+                Contraseña:
+                <input type="password" name="contraseña"> <br>
 
-    <div id="menu">
-        <ul>
-           <li><a href="http://127.0.0.1:8000/" title="Inicio">Inicio</a></li>
-           <li><a href="http://127.0.0.1:8000/municipios" title="Todos">Todos</a></li>
-           <li><a href="http://127.0.0.1:8000/info" title="Info">Info</a></li>
-           <li><a href="?format=xml" title="XML">Descargar esta página como XML</a></li>
-        </ul>
-    </div>
-
-    {% block content %}{{ content }}{% endblock %}
-
-    <div id="pie">
-      Este es el pie de pagina
-    </div>
-
-  </body>
+                <input type="submit" value="Login">
+            </form>
+          </div>
+        {% endif %}
+        </div>
+  <div id="menu">
+            MENÚ:
+            <ul>
+               <li><a href="http://127.0.0.1:8000/" title="Inicio">Inicio</a></li>
+               <li><a href="http://127.0.0.1:8000/municipios" title="Todos">Todos</a></li>
+               <li><a href="http://127.0.0.1:8000/info" title="Info">Info</a></li>
+               <li><a href="?format=xml" title="XML">XML</a></li>
+            </ul>
+        </div>
+  <div id="pie">
+          Este es el pie de pagina
+        </div>
 </html>

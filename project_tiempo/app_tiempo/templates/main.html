@@ -1,14 +1,23 @@
 {% extends "./base.html" %}
 
 {% block content %}
-    BOTÓN PRECIPITACIONES <br>
+    <div id="boton_precip">
+        <form action="" method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="form_type" value="boton">
+        <input type="submit" value="BOTON">
+        </form>
+    </div>
+
+    <h1>{{title}}</h1>
 
     {% if municipios_comentados|length < 10 %}
-        No hay 10 municipios con comentarios. Muestro solo los que tengan comentarios.
+        <!-- No hay 10 municipios con comentarios. Muestro solo los que tengan comentarios. -->
         {% for municipio in municipios_comentados %}
             <div id="tabla_info">
                 COMENTARIOS: {{municipio.num_comentarios}} <br>
                 Nombre: {{municipio.nombre}}<br>
+                Día: {{municipio.dia}}<br>
                 ID: {{municipio.mun_id}}<br>
                 Altitud: {{municipio.altitud}}<br>
                 Latitud: {{municipio.latitud}}<br>
@@ -22,12 +31,13 @@
             </div>
         {% endfor %}
     {% else %}
-        Tengo más de 10 municipios. Muestro los 10 con más comentarios.
+        <!-- Tengo más de 10 municipios. Muestro los 10 con más comentarios. -->
 
         {% for municipio in municipios_comentados %}
             <div id="tabla_info">
                 COMENTARIOS: {{municipio.num_comentarios}} <br>
                 Nombre: {{municipio.nombre}}<br>
+                Día: {{municipio.dia}}<br>
                 ID: {{municipio.mun_id}}<br>
                 Altitud: {{municipio.altitud}}<br>
                 Latitud: {{municipio.latitud}}<br>

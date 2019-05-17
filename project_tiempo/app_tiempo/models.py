@@ -8,6 +8,7 @@ class Municipio(models.Model):
     mun_id = models.CharField(max_length = 32, null=True)
     # Pongo el id como un Char porque si lo pongo como int, y
     # en /municipios/id el id es 0235, coge solo 235. Si es str no pasa.
+    dia = models.IntegerField(null=True)
     altitud = models.CharField(max_length = 100, null=True)
     latitud = models.CharField(max_length = 100, null=True)
     longitud = models.CharField(max_length = 100, null=True)
@@ -47,3 +48,10 @@ class Municipio_Usuario(models.Model):
 
     def __str__(self):
         return self.municipio.nombre + ' -- ' + str(self.usuario)
+
+class Navegador(models.Model):
+    cookie_id = models.CharField(max_length = 100, null=True);
+    estado = models.IntegerField(default = 0);
+
+    def __str__(self):
+        return self.cookie_id
