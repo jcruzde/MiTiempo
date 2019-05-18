@@ -5,18 +5,22 @@
         <form action="" method="POST">
         {% csrf_token %}
         <input type="hidden" name="form_type" value="boton">
-        <input type="submit" value="BOTON">
+        <input type="submit" value="FILTRAR POR PRECIPITACIONES">
         </form>
     </div>
 
-    <h1>{{title}}</h1>
+    {% if not title %}
+    <h1>Municipios más comentados</h1>
+    {% else %}
+        <h1>{{title}}</h1>
+    {% endif %}
 
     {% if municipios_comentados|length < 10 %}
         <!-- No hay 10 municipios con comentarios. Muestro solo los que tengan comentarios. -->
         {% for municipio in municipios_comentados %}
             <div id="tabla_info">
-                COMENTARIOS: {{municipio.num_comentarios}} <br>
-                Nombre: {{municipio.nombre}}<br>
+                <h2>{{municipio.nombre}}</h2>
+                Comentarios: {{municipio.num_comentarios}} <br>
                 Día: {{municipio.dia}}<br>
                 ID: {{municipio.mun_id}}<br>
                 Altitud: {{municipio.altitud}}<br>
@@ -35,8 +39,8 @@
 
         {% for municipio in municipios_comentados %}
             <div id="tabla_info">
-                COMENTARIOS: {{municipio.num_comentarios}} <br>
-                Nombre: {{municipio.nombre}}<br>
+                <h2>{{municipio.nombre}}</h2>
+                Comentarios: {{municipio.num_comentarios}} <br>
                 Día: {{municipio.dia}}<br>
                 ID: {{municipio.mun_id}}<br>
                 Altitud: {{municipio.altitud}}<br>
@@ -55,6 +59,7 @@
 
     {% if usuarios %}
         <div id = "lista_usuarios">
+            <h2>Usuarios registrados</h2>
             {% for usuario in usuarios %}
                 <a href="http://127.0.0.1:8000/{{usuario}}">{{ titulos|get_item:usuario }} - Usuario: {{usuario}} </a> <br>
             {% endfor %}

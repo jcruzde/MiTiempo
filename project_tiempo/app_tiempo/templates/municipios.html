@@ -7,7 +7,7 @@
         <form action="" method="POST">
             {% csrf_token %}
             <input type="hidden" name="form_type" value="filtro_temp">
-            Rango de temperatura máxima <br><br>
+            Filtrar por rango de temperatura máxima <br><br>
             Máxima: <input type="number" name="maxima" value={{filtro_max}}> <br>
             Mínima: <input type="number" name="minima" value={{filtro_min}}> <br>
             <input type="submit" value="Enviar"> <br>
@@ -23,13 +23,14 @@
     {% endif %}
 
 
+    <div id="todos">
     {% if lista_municipios %}
-        Hay algun municipio <br>
         {% for mun in lista_municipios %}
-            <li><h4><a href="municipios/{{ mun.mun_id }}">{{ mun.nombre }} - Nº de comentarios: {{mun.num_comentarios}}</a></h4></li>
+            <h4><a href="municipios/{{ mun.mun_id }}">{{ mun.nombre }} - Comentarios: {{mun.num_comentarios}}</a></h4>
         {% endfor %}
     {% else %}
         No hay ningún municipio
     {% endif %}
+    </div>
 
 {% endblock %}

@@ -6,7 +6,8 @@
             El municipio con este ID no está en mi base de datos.
         {% else %}
             <div id="tabla_info">
-                Nombre: {{municipio.nombre}}<br>
+                <h2>{{municipio.nombre}}</h2>
+                Comentarios: {{municipio.num_comentarios}} <br>
                 Día: {{municipio.dia}}<br>
                 ID: {{municipio.mun_id}}<br>
                 Altitud: {{municipio.altitud}}<br>
@@ -19,8 +20,8 @@
                 <a href="http://www.aemet.es/es/eltiempo/prediccion/municipios/{{municipio.url}}" >Su página de la AEMET</a> <br><br>
             </div>
 
-            Comentarios para este municipio: <br>
             <div id = "comentarios">
+                <h3>Comentarios para este municipio:</h3>
                 {% for comentario in lista_comentarios %}
                     "{{comentario.comentario}}" - Comentado por {{comentario.usuario}} <br>
                 {% endfor %}
@@ -28,7 +29,7 @@
 
             {% if request.user.is_authenticated %}
                 <br><br>Hola {{user.username}}!
-                Añade algún comentario a este municipio
+                Añade algún comentario a este municipio <br><br>
                 <div id = "form_comentario">
                     <form action="" method="POST">
                         {% csrf_token %}
