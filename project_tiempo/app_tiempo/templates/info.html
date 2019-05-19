@@ -1,5 +1,34 @@
 {% extends "./base.html" %}
 
 {% block content %}
-    Información sobre la página
+    <div id="info">
+        <p>
+            App Web diseñada por <b>Jorge Cruz de la Haza</b>, estudiante de la URJC del Doble Grado en Ingeniería en Sistemas de Telecomunicación y ADE.
+        </p>
+        Usuario en el laboratorio: <b>jcruzde</b><br>
+        Usuario en Gitlab: <b>jcruzde</b>
+        <br><br>
+        Vídeo demostración de la funcionalidad básica:
+        Vídeo demostración de la funcionalidad optativa:
+        <br><br>
+        <b><i>Comentarios sobre el funcionamiento de la app</i></b>
+        <br><br>
+        Usuarios registrados (user - password):
+        <ul>
+            <li>jorge - saro2019</li>
+            <li>pedro - saro2019</li>
+            <li>noelia - saro2019</li>
+            <li>carlos - saro2019</li>
+            <li>super - super (permisos de administrador)</li>
+        </ul>
+
+        En cualquier recurso se puede hacer login/logout sin que afecte al contenido del mismo en ese momento.
+        <br><br>
+        El enlace '<b>XML</b>' en el menú solo será útil en los recursos '/','/municipios', '/user'. En el resto de casos el
+        enlace estará disponible, pero sin ningún efecto.
+        <br><br>
+        Intentar acceder a cualquier <b>recurso distinto</b> a los de los enlaces pinchables,
+        se entenderá como página de un usuario. Si el usuario no existe no mostrará ningún municipio. Ejemplo: /afdgag
+        => Municipios del usuario 'afdgag': Ninguno.
+    </div>
 {% endblock %}
