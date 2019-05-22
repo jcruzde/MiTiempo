@@ -53,7 +53,7 @@ def add_municipio(request):
     try: # Compruebo si existe el municipio
         id = settings.municipios[municipio]['id'][-5:]
         municipio_inBD = Municipio.objects.get(nombre=municipio)
-        mensaje = "El municipio ya existe en la BD de municipios"
+        # mensaje = "El municipio ya existe en la BD de municipios"
         add_seleccion_usuario(request, municipio_inBD)
     except KeyError: # No es un municipio válido.
         mensaje = "Disculpe, el municipio introducido no existe"
@@ -76,11 +76,11 @@ def add_municipio(request):
                             num_comentarios = 0,
                             )
         new_mun.save()
-        mensaje = "Añadido " + municipio + " a su lista de municipios"
+        # mensaje = "Añadido " + municipio + " a su lista de municipios"
 
         add_seleccion_usuario(request, new_mun)
 
-    return mensaje
+    # return mensaje
 
 def actualizar_municipio(id):
     print('Actualizo la info del municipio')
@@ -274,6 +274,13 @@ def gestion_boton(request,usuarios,titulos,municipios_comentados):
 
     return response
 
+def like(request):
+    municipio = request.POST['municipio']
+    print('Recibo un like para: ' + str(municipio))
+    municipio_in_DB = Municipio.objects.get(nombre = municipio)
+    print(str(municipio_in_DB.nombre) + ' ya tiene ' + str(municipio_in_DB.num_likes))
+    municipio_in_DB.num_likes = municipio_in_DB.num_likes + 1
+    municipio_in_DB.save()
 
 ########################################################################
 # Create your views here.
@@ -326,20 +333,8 @@ def main(request):
         return response
 
 def usuario(request, user_path):
-    mensaje = ""
 
-    # Esto sobraría¿?
-    if request.method == "GET":
-        try:
-            user = User.objects.get(username=user_path)
-            print('El usuario existe')
-            content = "Mi lista de municipios"
-        except User.DoesNotExist:
-            user = None
-            print('El usuario no está registrado, no tendrá contenido')
-            content = "Este usuario no está registrado."
-
-    elif request.method == "POST":
+    if request.method == "POST":
         form_type = request.POST['form_type']
         if form_type == 'logout':
             logout_user(request)
@@ -350,9 +345,9 @@ def usuario(request, user_path):
             cambiar_css(request)
         elif form_type == 'titulo':
             print('Quiere cambiar su titulo')
-            mensaje = cambiar_titulo(request)
+            cambiar_titulo(request)
         elif form_type == 'municipio':
-            mensaje = add_municipio(request)
+            add_municipio(request)
         elif form_type == 'quitar':
             borrar_municipio(request)
     try:
@@ -376,7 +371,6 @@ def usuario(request, user_path):
         return (render(request, './usuario.xml', {'lista_municipios_user': lista_municipios_user}, content_type='text/xml'))
     else:
         return render(request, './usuario.html', {'path': user_path,
-                                                  'mensaje': mensaje,
                                                   'lista_municipios_user': lista_municipios_user,
                                                   'preferencias': preferencias})
 
@@ -430,6 +424,9 @@ def municipios_id(request, id):
             login_user(request)
         elif form_type == 'comentario':
             add_comentario(request, id)
+        elif form_type == 'like':
+            print('Recibe un like')
+            like(request)
 
     try:
         print('Voy a comprobar si tengo en mi BD el municipio con id: ' + str(id))
@@ -494,7 +491,7 @@ def servir_css(request):
         color_fondo = ''
 
 
-    return render(request, './main2.css',{'color_letra': color_letra,
+    return render(request, './main.css',{'color_letra': color_letra,
                                          'tamaño_letra': tamaño_letra,
                                          'color_fondo': color_fondo},
                                         content_type='text/css')

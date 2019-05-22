@@ -4,7 +4,7 @@
 
     <h1>{{preferencias.titulo}}</h1>
 
-    <h3>Estos son los municipios del usuario -{{path}}- </h3>
+    <!-- <h3>Estos son los municipios del usuario -{{path}}- </h3> -->
     {% for item in lista_municipios_user %}
             <div id="tabla_info">
                 <h2>{{item.municipio.nombre}}</h2>
@@ -18,6 +18,7 @@
                 Temperatura mínima: {{item.municipio.minima}}<br>
                 Probabilidad de precipitación: {{item.municipio.prob_precipitacion}}<br>
                 Descripción: {{item.municipio.descripcion}}<br>
+                <a href = "http://127.0.0.1:8000/municipios/{{item.municipio.mun_id}}">Más información</a> <br>
                 <a href="http://www.aemet.es/es/eltiempo/prediccion/municipios/{{item.municipio.url}}" >Su página de la AEMET</a> <br><br>
             </div>
 
@@ -28,7 +29,7 @@
                             {% csrf_token %}
                             <input type="hidden" name="form_type" value="quitar">
                             <input type="hidden" name="municipio" value="{{item.municipio.nombre}}">
-                            <input type="submit" value="Quitar"> <br>
+                            <input type="image" name="borrar" src="../static/borrar.png" />
                         </form>
                     </div>
                 {% endifequal %}
@@ -37,7 +38,7 @@
 
     {% if request.user.is_authenticated %}
         {% ifequal user.username path %}
-            <br><br> Puedes modificar tu pagina
+            <!-- <br><br> Puedes modificar tu pagina -->
                 <div id="form_css">
                     <form action="" method="POST">
                         {% csrf_token %}
@@ -69,10 +70,8 @@
                         <input type="submit" value="Enviar"> <br>
                     </form>
                 </div>
-
-                {{mensaje}}
         {% else %}
-            <br><br> {{user.username}} está loggeado, pero no puede modificar los municipios de {{path}}
+            <!-- <br><br> {{user.username}} está loggeado, pero no puede modificar los municipios de {{path}} -->
         {% endifequal %}
     {% endif %}
 

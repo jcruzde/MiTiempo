@@ -15,11 +15,22 @@
         <h1>{{title}}</h1>
     {% endif %}
 
-    {% if municipios_comentados|length < 10 %}
-        <!-- No hay 10 municipios con comentarios. Muestro solo los que tengan comentarios. -->
+    {% if municipios_comentados %}
         {% for municipio in municipios_comentados %}
             <div id="tabla_info">
                 <h2>{{municipio.nombre}}</h2>
+
+                <!-- Elección del icono -->
+                {% if municipio.prob_precipitacion < 40 %}
+                    <img src="../static/tiempos/sol.ico"><br>
+                {% else %}
+                    {% if municipio.prob_precipitacion < 65 %}
+                        <img src="../static/tiempos/nubes.ico"><br>
+                    {% else %}
+                        <img src="../static/tiempos/lluvia.ico"><br>
+                    {% endif %}
+                {% endif %}
+
                 Comentarios: {{municipio.num_comentarios}} <br>
                 Día: {{municipio.dia}}<br>
                 ID: {{municipio.mun_id}}<br>
@@ -34,27 +45,6 @@
                 <a href="http://www.aemet.es/es/eltiempo/prediccion/municipios/{{municipio.url}}" >Su página de la AEMET</a> <br><br>
             </div>
         {% endfor %}
-    {% else %}
-        <!-- Tengo más de 10 municipios. Muestro los 10 con más comentarios. -->
-
-        {% for municipio in municipios_comentados %}
-            <div id="tabla_info">
-                <h2>{{municipio.nombre}}</h2>
-                Comentarios: {{municipio.num_comentarios}} <br>
-                Día: {{municipio.dia}}<br>
-                ID: {{municipio.mun_id}}<br>
-                Altitud: {{municipio.altitud}}<br>
-                Latitud: {{municipio.latitud}}<br>
-                Longitud: {{municipio.longitud}}<br>
-                Temperatura máxima: {{municipio.maxima}}<br>
-                Temperatura mínima: {{municipio.minima}}<br>
-                Probabilidad de precipitación: {{municipio.prob_precipitacion}}<br>
-                Descripción: {{municipio.descripcion}}<br>
-                <a href = "http://127.0.0.1:8000/municipios/{{municipio.mun_id}}">Más información</a> <br>
-                <a href="http://www.aemet.es/es/eltiempo/prediccion/municipios/{{municipio.url}}" >Su página de la AEMET</a> <br><br>
-            </div>
-        {% endfor %}
-
     {% endif %}
 
     {% if usuarios %}

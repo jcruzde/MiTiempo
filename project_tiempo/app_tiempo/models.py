@@ -18,6 +18,8 @@ class Municipio(models.Model):
     descripcion = models.TextField(null=True)
     url = models.CharField(max_length = 100, null=True)
     num_comentarios = models.IntegerField(default = 0)
+    num_likes = models.IntegerField(default = 0)
+
 
     def __str__(self):
         return self.nombre

@@ -18,6 +18,17 @@
                 Probabilidad de precipitación: {{municipio.prob_precipitacion}}<br>
                 Descripción: {{municipio.descripcion}}<br>
                 <a href="http://www.aemet.es/es/eltiempo/prediccion/municipios/{{municipio.url}}" >Su página de la AEMET</a> <br><br>
+
+                <b>Nº de likes: {{municipio.num_likes}}</b><br><br>
+            </div>
+
+            <div id = "form_like">
+                <form action="" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="form_type" value="like">
+                    <input type="hidden" name="municipio" value="{{municipio.nombre}}">
+                    <input type="image" name="like" src="../static/like.ico" />
+                </form>
             </div>
 
             <div id = "comentarios">
@@ -28,8 +39,8 @@
             </div>
 
             {% if request.user.is_authenticated %}
-                <br><br>Hola {{user.username}}!
-                Añade algún comentario a este municipio <br><br>
+                <!-- <br><br>Hola {{user.username}}!
+                Añade algún comentario a este municipio <br><br> -->
                 <div id = "form_comentario">
                     <form action="" method="POST">
                         {% csrf_token %}
