@@ -5,7 +5,7 @@
         <form action="" method="POST">
         {% csrf_token %}
         <input type="hidden" name="form_type" value="boton">
-        <input type="image" name="filtro" src="../static/filtro.png" />
+        <input type="image" name="filtro" src="https://raw.githubusercontent.com/jcruzde/final-mitiempo/master/project_tiempo/app_tiempo/static/filtro.png" />
         </form>
     </div>
 
@@ -22,12 +22,12 @@
 
                 <!-- Elección del icono -->
                 {% if municipio.prob_precipitacion < 40 %}
-                    <img src="../static/tiempos/sol.ico"><br>
+                    <img src="https://raw.githubusercontent.com/jcruzde/final-mitiempo/master/project_tiempo/app_tiempo/static/tiempos/sol.ico"><br>
                 {% else %}
                     {% if municipio.prob_precipitacion < 65 %}
-                        <img src="../static/tiempos/nubes.ico"><br>
+                        <img src="https://raw.githubusercontent.com/jcruzde/final-mitiempo/master/project_tiempo/app_tiempo/static/tiempos/nubes.ico"><br>
                     {% else %}
-                        <img src="../static/tiempos/lluvia.ico"><br>
+                        <img src="https://raw.githubusercontent.com/jcruzde/final-mitiempo/master/project_tiempo/app_tiempo/static/tiempos/lluvia.ico"><br>
                     {% endif %}
                 {% endif %}
 
