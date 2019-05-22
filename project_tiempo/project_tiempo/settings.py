@@ -126,7 +126,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 municipios = {} #clave = nombre del municipio, valor = diccionario del json
-with open('/home/mitiempo/mitiempo.pythonanywhere.com/project_tiempo/municipios.json') as file:
+with open('/home/eltiempodejorge/eltiempodejorge.pythonanywhere.com/project_tiempo/municipios.json') as file:
     lista_diccionarios = json.load(file)  # lista de diccionarios de todos los municipios
 
 for diccionario in lista_diccionarios:
