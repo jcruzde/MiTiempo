@@ -10,8 +10,7 @@ from . import parser
 from .models import Municipio, Preferencia, Comentario, Municipio_Usuario, Navegador
 import datetime
 from django.views.generic.base import RedirectView
-import random
-import string
+import secrets
 
 global filtro_max
 filtro_max = None
@@ -211,7 +210,7 @@ def cambiar_css(request):
     preferencia.save()
 
 def generate_cookie_id():
-    return ''.join(random.choices(string.ascii_lowercase + string.digits, k=32))
+    return secrets.token_urlsafe(32)
 
 def seleccion_municipios(municipios_comentados,estado):
     print('Estado por el que voy: ' +  str(estado))
